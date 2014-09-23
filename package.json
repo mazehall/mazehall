@@ -1,0 +1,32 @@
+{
+  "name": "mazehall",
+  "version": "0.1.0",
+  "description": "a mean stack framework with clustering and plugin support",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "bin": {
+    "mazehall": "./bin/mazehall",
+    "mazehall-install": "./bin/mazehall-install",
+    "mazehall-uninstall": "./bin/mazehall-uninstall"
+  },
+  "author": {
+    "name": "Mazehall",
+    "email": "npm@mazehall.com"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "commander": "~2.3.0",
+    "express": "^4.9.0",
+    "npm": "^1.4.27",
+    "socket.io": "~1.1.0",
+    "socket.io-client": "~1.1.0",
+    "lodash": "~2.4.1",
+    "uglify-js": "~2.4.15"
+  },
+  "devDependencies": {
+    "coffee-script": "^1.8.0",
+    "mocha": "^1.21.4"
+  }
+}

@@ -1,0 +1,9 @@
+#!/usr/bin/env node
+
+var program, cli = require("../lib/cli");
+
+program = require("commander");
+program.description("Uninstalls a MAZEHALL module")
+       .parse(process.argv);
+
+cli.uninstall(program.args.length ? program.args[0] : null);

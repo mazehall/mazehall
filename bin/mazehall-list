@@ -1,0 +1,17 @@
+#!/usr/bin/env node
+
+require("coffee-script/register");
+var program, option, cli = require(process.cwd()+ "/node_modules/mazehall/lib/cli.coffee");
+
+program = require("commander");
+program.description("List installed MAZEHALL packages")
+       .option("-a, --all", "list all installed packages")
+       .option("-j, --json", "returns an json object")
+       .parse(process.argv);
+
+option = {
+    all: program.all || false,
+    json: program.json
+};
+
+cli.list(option);

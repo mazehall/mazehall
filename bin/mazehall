@@ -1,0 +1,16 @@
+#!/usr/bin/env node
+
+var program, version;
+
+// MAZEHALL CLI
+version = require("../package").version;
+program = require("commander");
+program.version(version, "-v, --version");
+program.command("install <module> [options]", "Installs a MAZEHALL module")
+       .command("uninstall <module>", "Uninstalls a MAZEHALL module")
+       .parse(process.argv);
+
+// print help with no args
+if (program.args.length < 1) {
+    program.help();
+}

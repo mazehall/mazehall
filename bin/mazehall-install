@@ -1,7 +1,5 @@
 #!/usr/bin/env node
 
-require("coffee-script/register");
-
 var option, program, cli = require("../lib/cli");
 
 program = require("commander");

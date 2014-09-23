@@ -1,10 +1,10 @@
 #rewire = require 'rewire'
-mazehall = require '../lib/mazehall'
+mazehall = require './mazehall'
 
 describe 'mazehall functions', ->
 
     beforeEach ->
         return
 
-    it '"ok" should set status and create hal renderer', (done) ->
+    it 'should be tested', (done) ->
         done()

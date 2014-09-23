@@ -1,4 +1,4 @@
-modules = require './modules.coffee'
+modules = require './modules'
 aggregate = require "./aggregate"
 
 mazehall =

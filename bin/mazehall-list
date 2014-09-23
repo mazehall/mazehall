@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
-require("coffee-script/register");
-var program, option, cli = require(process.cwd()+ "/node_modules/mazehall/lib/cli.coffee");
+var program, option, cli = require(process.cwd()+ "/node_modules/mazehall/lib/cli");
 
 program = require("commander");
 program.description("List installed MAZEHALL packages")

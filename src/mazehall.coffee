@@ -27,12 +27,7 @@ runNonCore = (callback) ->
     require('./socket/ui').start()
 
     server = app.listen mazehall.port, () ->
-      console.log "Mazehall ui listening on port #{server.address().port}"
+      console.log "Mazehall #{mazehall.components} listening on port #{server.address().port}"
       callback err, app if callback
-
-mazehall.isCore = ->
-  return mazehall.components == "core"
-mazehall.isUI = ->
-  return mazehall.components == "ui"
 
 module.exports = mazehall

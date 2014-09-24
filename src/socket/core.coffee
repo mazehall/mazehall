@@ -1,6 +1,7 @@
 mazehall= require "mazehall"
-modules = require "../modules"
 socket  = require "socket.io"
+
+modules = require "../modules"
 
 manager =
   socket: null
@@ -12,24 +13,25 @@ manager =
     @socket = socket.listen(@listen).of "/socket" unless @socket?
     @socket.on "connection", (socket) ->
       socket.mazehall =
-        component: socket.handshake.query.mazehall_COMPONENT || null
+        components: socket.handshake.query.components || 'null'
+        componentsArray: (socket.handshake.query.components || 'null').split ","
 
-      return console.log "[socket:core] connection %s rejected - not a valid mazehall node", socket.handshake.address unless socket.mazehall.component
+      return console.log "[socket:core] connection %s rejected - not a valid mazehall node", socket.handshake.address unless socket.mazehall.components
 
-      console.log "[socket:core] %s are connected - component: %s", socket.handshake.address, socket.mazehall.component.toUpperCase()
+      console.log "[socket:core] %s are connected - components: %s", socket.handshake.address, socket.mazehall.components.toUpperCase()
 
       for name of manager.method
         socket.on name, manager.method[name]
 
-      # join the socket to an component channel
-      socket.join socket.mazehall.component.toLowerCase()
+      # join the socket to an components channel
+      socket.join socket.mazehall.components.toLowerCase()
 
     console.log "[socket:core] listening on port %d", @listen
 
     return@
 
 manager.method.mazehallCoreConfigInstallModule = (module) ->
-  # component: admin check
+  # components: admin check
   console.log "[socket:core] add new package: ", module.name
 
   option = {}
@@ -40,10 +42,10 @@ manager.method.mazehallCoreConfigInstallModule = (module) ->
 
   cli = require "./../cli"
   cli.install source, option, ->
-    console.log "[socket:ui] sync | broadcast install complete"
+    console.log "[socket:#{manager.socket.mazehall.components}] sync | broadcast install complete"
 
-    # emitting to component channel
-    # @todo get installed component type and emit it
+    # emitting to components channel
+    # @todo get installed components type and emit it
     components = "ui"
     newmodules = []
     manager.socket.to(components).emit "mazehallCoreConfigInstalledModules", newmodules
@@ -52,15 +54,15 @@ manager.method.mazehallCoreConfigInstallModule = (module) ->
   return@
 
 manager.method["mazehallCoreConfigUninstallModule"] = (module) ->
-  # component: admin check
+  # components: admin check
   console.log "[socket:core] remove package: ", module;
 
   cli = require "./../cli"
   cli.uninstall module.name, ->
-    console.log "[socket:ui] sync | broadcast remove complete"
+    console.log "[socket:#{manager.socket.mazehall.components}] sync | broadcast remove complete"
 
-    # emitting to component channel
-    # @todo get uninstalled component
+    # emitting to components channel
+    # @todo get uninstalled components
     components = "ui"
     newmodules = []
     manager.socket.to(components).emit "mazehallCoreConfigInstalledModules", newmodules
@@ -89,8 +91,8 @@ manager.method.mazehallCoreConfigGetInstalledModules = ->
   return@
 
 manager.method.disconnect = ->
-  console.log "[socket:core] %s disconnect - component: %s", @handshake.address, @mazehall.component.toUpperCase()
-  @leave @mazehall.component.toLowerCase()
+  console.log "[socket:core] %s disconnect - components: %s", @handshake.address, @mazehall.components.toUpperCase()
+  @leave @mazehall.components.toLowerCase()
 
   return@
 

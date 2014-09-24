@@ -24,7 +24,7 @@ runNonCore = (callback) ->
   require('./nonCore') (err, app) ->
     throw err if err
 
-    require('./socket/ui').start()
+    require('./socket/nonCore').start()
 
     server = app.listen mazehall.port, () ->
       console.log "Mazehall #{mazehall.components} listening on port #{server.address().port}"

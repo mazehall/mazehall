@@ -32,6 +32,21 @@ modules =
 
           return callback null, modules.packages if counter == 0
 
+  getModulesByComponents: (components, callback) ->
+    foundModules = []
+    modulesFromComponents = []
+
+    for component in components
+      for index, pkg of modules.packages
+        continue if not pkg?.components? or not Array.isArray pkg.components
+        continue if (foundModules.indexOf pkg.name) >= 0
+        continue if (pkg.components.indexOf component) is -1
+
+        foundModules.push pkg.name
+        modulesFromComponents.push pkg
+
+    callback null, modulesFromComponents
+
   enableModules: (callback) ->
     console.log 'enable modules'
 
@@ -52,33 +67,20 @@ modules =
   enableModulesByComponents: (components, callback) ->
     console.log 'enable modules by components'
 
-    enabledModules = []
-    modulesFromComponents = []
+    modules.getModulesByComponents components, (err, packages) ->
+      return callback null, packages if packages.length <= 0
 
-    for component in components
-      console.log 'lookup modules for component:', component
+      counter = 0
+      for index, pkg of packages
+        counter++
+        try
+          modules.callbacks[pkg.name] = {"app": require pkg.name}
+        catch e
+          console.log "[error] enabling module #{pkg.name} failed with:", e.message
 
-      for index, pkg of modules.packages
-        continue if not pkg?.components? or not Array.isArray pkg.components
-        continue if (enabledModules.indexOf pkg.name) >= 0
-        continue if (pkg.components.indexOf component) is -1
-
-        enabledModules.push pkg.name
-        modulesFromComponents.push pkg
-
-    return callback null, modulesFromComponents if modulesFromComponents.length <= 0 || modules.packages.length <= 0
-
-    counter = 0
-    for index, pkg of modulesFromComponents
-      counter++
-      try
-        modules.callbacks[pkg.name] = {"app": require pkg.name}
-      catch e
-        console.log "[error] enabling module #{pkg.name} failed with:", e.message
-
-    for index of modulesFromComponents
-      counter--
-      callback null, modules.packages if !counter
+      for index of packages
+        counter--
+        callback null, modules.packages if !counter
 
   synchronize: (remotePackages, callback) ->
     return false if not remotePackages or not typeof remotePackages == "object"

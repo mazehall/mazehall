@@ -19,33 +19,21 @@ manager =
     for name of @method
       manager.socket.on name, @method[name]
 
-    return@
-
 manager.method.connect = (socket) ->
   console.log "[socket:#{components}] connected to core!"
   @emit "mazehallCoreConfigGetInstalledModules"
 
-  return@
-
 manager.method.disconnect = (message) ->
   console.log "[socket:#{components}] %s: disconnected from core ...reconnect", message
-
-  return@
 
 manager.method.reconnect = (socket) ->
   console.log "[socket:#{components}] reconnection was successful"
 
-  return@
-
 manager.method.reconnect_error = (error) ->
-  console.log "[socket:#{components}] couldn’t reconnect to core | %d: %s", error.description, error.message
-
-  return@
+  console.log "[socket:#{components}] failed to reconnect to core | %d: %s", error.description, error.message
 
 manager.method.error = (error) ->
   console.log "[socket:#{components}] connection error | %d: %s", error.description, error.message
-
-  return@
 
 manager.method.mazehallCoreConfigInstalledModules = (data) ->
   return unless Array.isArray data
@@ -53,7 +41,5 @@ manager.method.mazehallCoreConfigInstalledModules = (data) ->
   console.log "[socket:#{components}] [%s] %s @%s", (index+1), module.name, module.version for module, index in data if data?
 
   modules.synchronize data
-
-  return@
 
 module.exports = manager

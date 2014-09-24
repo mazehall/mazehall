@@ -32,6 +32,21 @@ modules =
 
           return callback null, modules.packages if counter == 0
 
+  getModulesByComponents: (components, callback) ->
+    foundModules = []
+    modulesFromComponents = []
+
+    for component in components
+      for index, pkg of modules.packages
+        continue if not pkg?.components? or not Array.isArray pkg.components
+        continue if (foundModules.indexOf pkg.name) >= 0
+        continue if (pkg.components.indexOf component) is -1
+
+        foundModules.push pkg.name
+        modulesFromComponents.push pkg
+
+    callback null, modulesFromComponents
+
   enableModules: (callback) ->
     console.log 'enable modules'
 
@@ -40,7 +55,10 @@ modules =
     counter = 0
     for index, pkg of modules.packages
       counter++
-      modules.callbacks[pkg.name] = {"app": require pkg.name}
+      try
+        modules.callbacks[pkg.name] = {"app": require pkg.name}
+      catch e
+        console.log "[error] enabling module #{pkg.name} failed with:", e.message
 
     for index of modules.packages
       counter--
@@ -49,39 +67,29 @@ modules =
   enableModulesByComponents: (components, callback) ->
     console.log 'enable modules by components'
 
-    enabledModules = []
-    modulesFromComponents = []
+    modules.getModulesByComponents components, (err, packages) ->
+      return callback null, packages if packages.length <= 0
 
-    for component in components
-      console.log 'lookup modules for component:', component
+      counter = 0
+      for index, pkg of packages
+        counter++
+        try
+          modules.callbacks[pkg.name] = {"app": require pkg.name}
+        catch e
+          console.log "[error] enabling module #{pkg.name} failed with:", e.message
 
-      for index, pkg of modules.packages
-        continue if not pkg?.components? or not Array.isArray pkg.components
-        continue if (enabledModules.indexOf pkg.name) >= 0
-        continue if (pkg.components.indexOf component) is -1
-
-        modulesFromComponents.push pkg
-        enabledModules.push pkg
-
-    return callback null, modulesFromComponents if modulesFromComponents.length <= 0 || modules.packages.length <= 0
-
-    counter = 0
-    for index, pkg of modulesFromComponents
-      counter++
-      modules.callbacks[pkg.name] = {"app": require pkg.name}
-
-    for index of modulesFromComponents
-      counter--
-      callback null, modules.packages if !counter
+      for index of packages
+        counter--
+        callback null, modules.packages if !counter
 
   synchronize: (remotePackages, callback) ->
     return false if not remotePackages or not typeof remotePackages == "object"
 
     cleanUp = ->
       unless localModified
-        console.log "[socket:ui] sync | none packages changed"
+        console.log "[socket:#{components}] sync | none packages changed"
       else
-        console.log "[socket:ui] sync | packages changed! ....restarting server"
+        console.log "[socket:#{components}] sync | packages changed! ....restarting server"
         process.exit 1
 
     install = (pkg, callback) ->
@@ -89,13 +97,13 @@ modules =
       source = localModified = pkg.name
       option.repo = pkg.repository if pkg.repository
 
-      console.log "[socket:ui] sync | install new package:", pkg.name
+      console.log "[socket:#{components}] sync | install new package:", pkg.name
 
       cli.install source, option, ->
         callback null, true, pkg
 
     remove = (pkgName, callback) ->
-      console.log "[socket:ui] sync | remove package:", pkgName
+      console.log "[socket:#{components}] sync | remove package:", pkgName
 
       cli.uninstall pkgName, (err) ->
         return callback err, null, pkgName if err
@@ -105,23 +113,24 @@ modules =
     remote = []
     counter = 0
     localModified = false
+    components = require('mazehall').components
 
     remote.push pkg.name for pkg, index in remotePackages
     local.push pkg.name for pkg, index in modules.packages
 
-    console.log "[socket:ui] synchronize packages :"
-    console.log "[socket:ui] sync | local packages: ", local
-    console.log "[socket:ui] sync | remote packages: ", remote
+    console.log "[socket:#{components}] synchronize packages :"
+    console.log "[socket:#{components}] sync | local packages: ", local
+    console.log "[socket:#{components}] sync | remote packages: ", remote
 
     # eval packages for installation
     for pkg, index in remotePackages
-      console.log "[socket:ui] sync | already installed package:", pkg.name if (local.indexOf pkg.name) >= 0
+      console.log "[socket:#{components}] sync | already installed package:", pkg.name if (local.indexOf pkg.name) >= 0
       continue if (local.indexOf pkg.name) >= 0
 
       counter += 1
       install pkg, (err, result, pkg) ->
         throw new Error err if err
-        console.log "[socket:ui] sync | installation complete of package", pkg.name
+        console.log "[socket:#{components}] sync | installation complete of package", pkg.name
 
         counter -= 1
         localModified = true
@@ -134,7 +143,7 @@ modules =
       counter += 1
       remove pkgName, (err, result, pkgName) ->
         throw new Error err if err
-        console.log "[socket:ui] sync | removing complete of package", pkgName
+        console.log "[socket:#{components}] sync | removing complete of package", pkgName
 
         counter -= 1
         localModified = true

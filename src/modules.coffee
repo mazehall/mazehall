@@ -40,7 +40,10 @@ modules =
     counter = 0
     for index, pkg of modules.packages
       counter++
-      modules.callbacks[pkg.name] = {"app": require pkg.name}
+      try
+        modules.callbacks[pkg.name] = {"app": require pkg.name}
+      catch e
+        console.log "[error] enabling module #{pkg.name} failed with:", e.message
 
     for index of modules.packages
       counter--
@@ -60,15 +63,18 @@ modules =
         continue if (enabledModules.indexOf pkg.name) >= 0
         continue if (pkg.components.indexOf component) is -1
 
+        enabledModules.push pkg.name
         modulesFromComponents.push pkg
-        enabledModules.push pkg
 
     return callback null, modulesFromComponents if modulesFromComponents.length <= 0 || modules.packages.length <= 0
 
     counter = 0
     for index, pkg of modulesFromComponents
       counter++
-      modules.callbacks[pkg.name] = {"app": require pkg.name}
+      try
+        modules.callbacks[pkg.name] = {"app": require pkg.name}
+      catch e
+        console.log "[error] enabling module #{pkg.name} failed with:", e.message
 
     for index of modulesFromComponents
       counter--

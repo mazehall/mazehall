@@ -1,47 +1,47 @@
-mazehall= require "mazehall"
-socket  = require "socket.io"
+socket  = require 'socket.io'
+mazehall = require 'mazehall'
 
-modules = require "../modules"
+authorization = require('./authorization')
+modules = require '../modules'
 
-manager =
-  socket: null
-  method: []
-  finish: ->
-    delete @socket
-  start: (port) ->
-    @listen = port || 3001
-    @socket = socket.listen(@listen).of "/socket" unless @socket?
-    @socket.on "connection", (socket) ->
-      socket.mazehall =
-        components: socket.handshake.query.components || 'null'
+events = []
+manager = () ->
+  io = socket(mazehall.server);
 
-      return console.log "[socket:core] connection %s rejected - not a valid mazehall node", socket.handshake.address unless socket.mazehall.components
+  io.on 'connection', authorization.authOnEvent
+    secret: 'your secret or public key'
+    timeout: 15000
+  , (err, socket) ->
+    return socket.disconnect err if err
 
-      console.log "[socket:core] %s is connected - components: %s", socket.handshake.address, socket.mazehall.components.toUpperCase()
+    # assert components compatibility
+    return socket.disconnect 'no components supplied' unless socket.decoded_token.components
+    return socket.disconnect 'no components supplied' unless Object.prototype.toString.call socket.decoded_token.components  isnt '[object Array]'
 
-      for name of manager.method
-        socket.on name, manager.method[name]
+    # publish events for this socket
+    for name of events
+      socket.on name, events[name]
 
-    console.log "[socket:core] listening on port %d", @listen
+    # emit non core that it is authenticated and ready to go
+    socket.emit "authenticated"
 
-manager.method.mazehallCoreConfigGetInstalledModules = ->
-  console.log "[socket:core] push module list to connectors"
-
+events.mazehallCoreConfigGetInstalledModules = ->
   socket = @
-  components = (@mazehall.components).split ","
 
-  modules.getModulesByComponents components, (err, packages) ->
+  console.log "[socket:core] %s push modules by components list", @handshake.address
+
+  modules.getModulesByComponents @decoded_token.components, (err, packages) ->
     throw new Error err if err
 
     socket.emit "mazehallCoreConfigInstalledModules", packages
 
-manager.method.disconnect = ->
-  console.log "[socket:core] %s disconnect - components: %s", @handshake.address, @mazehall.components.toUpperCase()
+events.disconnect = ->
+  console.log "[socket:core] %s disconnect", @handshake.address
 
-manager.method.reconnect = (socket) ->
-  console.log "[socket:core] reconnection was successful"
+events.reconnect = (socket) ->
+  console.log "[socket:core] %s reconnection was successful", @handshake.address
 
-manager.method.error = (socket) ->
-  console.log "[socket:core] connection error"
+events.error = (socket) ->
+  console.log "[socket:core] %s connection error", @handshake.address
 
 module.exports = manager

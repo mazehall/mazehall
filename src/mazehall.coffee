@@ -1,5 +1,4 @@
 socket  = require "socket.io"
-socketioJwt = require 'socketio-jwt'
 
 modules = require './modules'
 aggregate = require "./aggregate"

@@ -3,6 +3,7 @@ socket  = require "socket.io"
 modules = require './modules'
 aggregate = require "./aggregate"
 
+
 mazehall =
   port: process.env.PORT || 3000
   components: (process.env.MAZEHALL_COMPONENTS ||  'core').split ","

@@ -3,12 +3,16 @@ mazehall = require "mazehall"
 io = require "socket.io-client"
 
 modules = require "../modules"
+secrets = require '../secrets'
 
 events = []
 components = mazehall.components
 tokenData = {components: components}
 
 manager = ->
+  return console.log "[socket:#{components}] skipped socket init"  unless secrets?.mazehall?.socket?
+  console.log "[socket:#{components}] init socket"
+
   socket = io "http://#{mazehall.coreSocket}"
 
   console.log "[socket:#{components}] core server > #{socket.io.uri}"
@@ -19,7 +23,7 @@ manager = ->
 events.connect = (socket) ->
   console.log "[socket:#{components}] connected to core!"
 
-  token = jwt.sign tokenData, 'your secret or public key', {expiresInMinutes: 60}
+  token = jwt.sign tokenData, secrets.mazehall.socket, {expiresInMinutes: 60}
 
   console.log "[socket:#{components}] authentication with core..."
   @emit "authenticate", {"token", token}

@@ -3,13 +3,16 @@ mazehall = require 'mazehall'
 
 authorization = require('./authorization')
 modules = require '../modules'
+secrets = require '../secrets'
 
 events = []
-manager = () ->
-  io = socket(mazehall.server);
+manager = ->
+  return console.log "[socket:core] skipped socket init"  unless secrets?.mazehall?.socket?
+  console.log "[socket:core] init socket"
 
+  io = socket(mazehall.server);
   io.on 'connection', authorization.authOnEvent
-    secret: 'your secret or public key'
+    secret: secrets.mazehall.socket
     timeout: 15000
   , (err, socket) ->
     return socket.disconnect err if err

@@ -8,8 +8,7 @@
   },
   "bin": {
     "mazehall": "./bin/mazehall",
-    "mazehall-install": "./bin/mazehall-install",
-    "mazehall-uninstall": "./bin/mazehall-uninstall"
+    "mazehall-init": "./bin/mazehall-init"
   },
   "author": {
     "name": "Mazehall",
@@ -19,10 +18,11 @@
   "dependencies": {
     "commander": "~2.3.0",
     "express": "^4.9.0",
-    "npm": "^1.4.27",
+    "jsonwebtoken": "^1.1.2",
+    "lodash": "~2.4.1",
+    "shelljs": "^0.3.0",
     "socket.io": "~1.1.0",
     "socket.io-client": "~1.1.0",
-    "lodash": "~2.4.1",
     "uglify-js": "~2.4.15"
   },
   "devDependencies": {

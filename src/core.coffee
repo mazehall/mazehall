@@ -6,7 +6,6 @@ aggregate = require "./aggregate"
 bootstrap = (callback) ->
   console.log 'bootstrap core'
 
-  # https://mazelab.atlassian.net/wiki/display/DEV/Mazehall+-+reactive+mean+cluster
   modules.findModules (err, foundModules) ->
     console.log 'loading mazehall modules failed' if err
     return callback err if err

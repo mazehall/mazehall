@@ -1,9 +1,9 @@
-path = require('path')
+path = require 'path'
 fs = require 'fs'
+shell = require 'shelljs'
 
 aggregate = require "./aggregate"
 utils = require "./utils"
-cli = require "./cli"
 
 modules =
   source: 'node_modules'
@@ -11,10 +11,10 @@ modules =
   callbacks: {}
 
   findModules: (callback) ->
-    path = path.join process.cwd(), modules.source
+    fullPath = path.join process.cwd(), modules.source
 
     counter = 0
-    fs.readdir path, (err, files) ->
+    fs.readdir fullPath, (err, files) ->
       return callback if !files || !files.length ||  err?.code == 'ENOENT'
       return callback err if !files || !files.length || err
 
@@ -22,7 +22,7 @@ modules =
         return null if file[0] == "."
         counter += 1
 
-        utils.loadJsonFile "#{path}/#{file}/package.json", (err, data) ->
+        utils.loadJsonFile "#{fullPath}/#{file}/package.json", (err, data) ->
           counter -= 1
           return callback err, null if err
 
@@ -99,13 +99,13 @@ modules =
 
       console.log "[socket:#{components}] sync | install new package:", pkg.name
 
-      cli.install source, option, ->
+      modules.install source, option, ->
         callback null, true, pkg
 
     remove = (pkgName, callback) ->
       console.log "[socket:#{components}] sync | remove package:", pkgName
 
-      cli.uninstall pkgName, (err) ->
+      modules.uninstall pkgName, (err) ->
         return callback err, null, pkgName if err
         callback err, true, pkgName
 
@@ -148,6 +148,25 @@ modules =
         counter -= 1
         localModified = true
         cleanUp() if counter == 0
+
+  uninstall: (module, callback) ->
+    return callback 'global npm not found' if not shell.which 'npm'
+
+    shell.exec "npm remove " + module, (code, output) ->
+      console.log "Error: npm uninstall failed" if code is not 0
+      return callback output if code is not 0
+      callback null, true
+
+  install: (module, options, callback) ->
+    return callback 'global npm not found' if not shell.which 'npm'
+
+    source = options?.repo || module
+
+    console.log "Installing module: %s from %s", module, options?.repo || "npm"
+    shell.exec "npm install " + source, (code, output) ->
+      console.log "Error: npm install failed" if code is not 0
+      return callback output if code is not 0
+      callback null, true
 
   runPreRoutingCallbacks: (app) ->
     console.log 'call pre routing callbacks...'

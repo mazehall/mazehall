@@ -5,9 +5,9 @@ var program, version;
 // MAZEHALL CLI
 version = require("../package").version;
 program = require("commander");
+
 program.version(version, "-v, --version");
-program.command("install <module> [options]", "Installs a MAZEHALL module")
-       .command("uninstall <module>", "Uninstalls a MAZEHALL module")
+program.command("init <name> [options]", "Builds a MAZEHALL module template")
        .parse(process.argv);
 
 // print help with no args

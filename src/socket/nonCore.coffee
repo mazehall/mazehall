@@ -13,7 +13,7 @@ manager = ->
   return console.log "[socket:#{components}] skipped socket init"  unless secrets?.mazehall?.socket?
   console.log "[socket:#{components}] init socket"
 
-  socket = io "http://#{mazehall.coreSocket}"
+  socket = io "#{mazehall.coreSocket}"
 
   console.log "[socket:#{components}] core server > #{socket.io.uri}"
 

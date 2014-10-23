@@ -7,7 +7,7 @@ aggregate = require "./aggregate"
 mazehall =
   port: process.env.PORT || 3000
   components: (process.env.MAZEHALL_COMPONENTS ||  'core').split ","
-  coreSocket: process.env.MAZEHALL_CORE_SOCKET || '127.0.0.1:3001'
+  coreSocket: process.env.MAZEHALL_CORE_SOCKET || 'http://127.0.0.1:3000'
 
 mazehall.serve = (callback) ->
   return runCore callback if (mazehall.components.indexOf "core") >= 0

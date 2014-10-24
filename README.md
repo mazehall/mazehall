@@ -33,7 +33,7 @@ This starts the server dependently of the environment. Some defaults are set to 
 - 'core' processes load all modules 
 - non core like 'admin' loads only the admin modules from the core
 
-Non core modules are being live updated from core if a json file with the ```mazehall.socket``` key was found. The file must in be in the pattern ```<environmentString>.json``` and in the ```secret``` directory.
+Non core modules are being live updated from core if a json file with the ```mazehall.socket``` key was found. The file must in be in the pattern ```<environmentString>.json``` and in the ```secrets``` directory.
 
     {
       "mazehall": {

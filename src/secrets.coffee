@@ -1,14 +1,11 @@
 path = require 'path'
 
-utils = require './utils'
+environment = process.env.NODE_ENV || 'development'
+path = path.join process.cwd(), 'secrets', environment + '.json'
 
-Secrets = () ->
-  environment = process.env.MAZEHALL_ENVIRONMENT || 'production'
-  path = path.join process.cwd(), 'secrets', environment + '.json'
+try
+  secrets = require path
+catch
+  secrets = {}
 
-  try
-    return require path
-  catch
-    return {}
-
-module.exports = new Secrets()
+module.exports = secrets

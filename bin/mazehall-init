@@ -6,11 +6,11 @@ program = require("commander");
 cli = require("../lib/cli");
 
 program.description("Builds a new MAZEHALL module")
-       .option("-s, --source <source>", "source folder for the module [default: node_modules]")
+       .option("-s, --source <source>", "source folder for the module [default: app_modules]")
        .parse(process.argv);
 
 option = {
-    source: program.source ? program.source : 'node_modules',
+    source: program.source ? program.source : 'app_modules',
     name: program.args.length ? program.args[0] : null
 };
 

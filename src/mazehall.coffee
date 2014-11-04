@@ -9,9 +9,9 @@ mazehall =
   components: (process.env.MAZEHALL_COMPONENTS ||  'core').split ","
   coreSocket: process.env.MAZEHALL_CORE_SOCKET || 'http://127.0.0.1:3000'
 
-mazehall.serve = (callback) ->
-  return runCore callback if (mazehall.components.indexOf "core") >= 0
-  runNonCore callback
+  serve: (callback) ->
+    return runCore callback if (mazehall.components.indexOf "core") >= 0
+    runNonCore callback
 
 runCore = (callback) ->
   require('./core') (err, app, db) ->

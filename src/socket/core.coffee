@@ -5,7 +5,23 @@ authorization = require('./authorization')
 modules = require '../modules'
 secrets = require '../secrets'
 
-events = []
+events =
+  mazehallCoreConfigGetInstalledModules: () ->
+    socket = @
+    console.log "[socket:core] %s push modules by components list", @handshake.address
+    modules.getModulesByComponents @decoded_token.components, (err, packages) ->
+      throw new Error err if err
+      socket.emit "mazehallCoreConfigInstalledModules", packages
+
+  disconnect: () ->
+    console.log "[socket:core] %s disconnect", @handshake.address
+
+  reconnect: (socket) ->
+    console.log "[socket:core] %s reconnection was successful", @handshake.address
+
+  error: (socket) ->
+    console.log "[socket:core] %s connection error", @handshake.address
+
 manager = ->
   return console.log "[socket:core] skipped socket init"  unless secrets?.mazehall?.socket?
   console.log "[socket:core] init socket"
@@ -28,23 +44,5 @@ manager = ->
     # emit non core that it is authenticated and ready to go
     socket.emit "authenticated"
 
-events.mazehallCoreConfigGetInstalledModules = ->
-  socket = @
-
-  console.log "[socket:core] %s push modules by components list", @handshake.address
-
-  modules.getModulesByComponents @decoded_token.components, (err, packages) ->
-    throw new Error err if err
-
-    socket.emit "mazehallCoreConfigInstalledModules", packages
-
-events.disconnect = ->
-  console.log "[socket:core] %s disconnect", @handshake.address
-
-events.reconnect = (socket) ->
-  console.log "[socket:core] %s reconnection was successful", @handshake.address
-
-events.error = (socket) ->
-  console.log "[socket:core] %s connection error", @handshake.address
 
 module.exports = manager

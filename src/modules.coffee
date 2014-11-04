@@ -6,15 +6,13 @@ aggregate = require "./aggregate"
 utils = require "./utils"
 
 modules =
-  source: 'node_modules'
+  appModuleSource: 'app_modules'
   packages: []
   callbacks: {}
 
   findModules: (callback) ->
-    fullPath = path.join process.cwd(), modules.source
-
     counter = 0
-    fs.readdir fullPath, (err, files) ->
+    readAndCheckModules = (err, files) ->
       return callback if !files || !files.length ||  err?.code == 'ENOENT'
       return callback err if !files || !files.length || err
 
@@ -28,9 +26,17 @@ modules =
 
           if data and data?.mazehall?
             console.log "found mazehall module #{file}"
+            data._mazehallModulePath = fullPath
             modules.packages.push data
 
           return callback null, modules.packages if counter == 0
+
+    fullPath = path.join process.cwd(), modules.appModuleSource
+    fs.readdir fullPath, readAndCheckModules
+
+#    fullPath = path.join process.cwd(), 'node_modules'
+#    fs.readdir fullPath, readAndCheckModules
+
 
   getModulesByComponents: (components, callback) ->
     foundModules = []
@@ -41,6 +47,7 @@ modules =
         continue if not pkg?.components? or not Array.isArray pkg.components
         continue if (foundModules.indexOf pkg.name) >= 0
         continue if (pkg.components.indexOf component) is -1
+#        continue if pkg._mazehallModulePath
 
         foundModules.push pkg.name
         modulesFromComponents.push pkg
@@ -56,7 +63,7 @@ modules =
     for index, pkg of modules.packages
       counter++
       try
-        modules.callbacks[pkg.name] = {"app": require pkg.name}
+        modules.callbacks[pkg.name] = {"app": require "#{pkg._mazehallModulePath}/#{pkg.name}"}
       catch e
         console.log "[error] enabling module #{pkg.name} failed with:", e.message
 
@@ -74,7 +81,7 @@ modules =
       for index, pkg of packages
         counter++
         try
-          modules.callbacks[pkg.name] = {"app": require pkg.name}
+          modules.callbacks[pkg.name] = {"app": require "#{pkg._mazehallModulePath}/#{pkg.name}"}
         catch e
           console.log "[error] enabling module #{pkg.name} failed with:", e.message
 
@@ -190,6 +197,6 @@ modules =
     for name, data of modules.callbacks
       if data.app?.aggregateAssets?
         for asset in data.app.aggregateAssets
-          aggregate.aggregateAsset.apply null, [name, modules.source, asset.type, asset.file, asset.options]
+          aggregate.aggregateAsset.apply null, [name, modules.appModuleSource, asset.type, asset.file, asset.options]
 
 module.exports = modules

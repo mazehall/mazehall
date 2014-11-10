@@ -178,19 +178,19 @@ modules =
   runPreRoutingCallbacks: (app) ->
     console.log 'call pre routing callbacks...'
     for name, data of modules.callbacks
-      console.log "call pre routing callback of module #{name}"
+      console.log " -> of module #{name}"
       data.app.usePreRouting app if data.app?.usePreRouting? && typeof data.app.usePreRouting == "function"
 
   runRoutingCallbacks: (app) ->
     console.log 'call routing callbacks...'
     for name, data of modules.callbacks
-      console.log "call routing callback of module #{name}"
+      console.log " -> of module #{name}"
       data.app.useRouting app if data.app?.useRouting? && typeof data.app.useRouting == "function"
 
   runPostRoutingCallbacks: (app) ->
     console.log 'call post routing callbacks...'
     for name, data of modules.callbacks
-      console.log "call post routing callback of module #{name}"
+      console.log " -> of module #{name}"
       data.app.usePostRouting app if data.app?.usePostRouting? && typeof data.app.usePostRouting == "function"
 
   aggregateAsset: ->

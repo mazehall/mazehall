@@ -1,21 +1,16 @@
-express = require 'express'
-mazehall = require 'mazehall'
-
 modules = require './modules'
 aggregate = require "./aggregate"
 
-bootstrap = (callback) ->
+bootstrap = (app, components, callback) ->
   console.log 'bootstrap non core'
 
   modules.findModules (err, foundModules) ->
     console.log 'loading mazehall modules failed' if err
     return callback err if err
 
-    modules.enableModulesByComponents mazehall.components, (err, result) ->
+    modules.enableModulesByComponents components, (err, result) ->
       console.log 'enabling mazehall modules failed' if err
       return callback err if err
-
-      app = express()
 
       #run aggregate
       modules.aggregateAsset()

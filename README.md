@@ -12,10 +12,34 @@ A mean stack framework with built-in multi node cluster features.
 Create your own new application with an app.js like:
 
     var mazehall = require('mazehall');
+    var config = require('config');
+    var expressValidator = require('express-validator');
+    var logger = require('morgan');
+    
+    mazehall.app.use(expressValidator());
+    mazehall.app.use(logger(config.loggerOptions));
     
     mazehall.serve();
     
-This starts the server dependently of the environment. Some defaults are set to bring up a core process.
+This starts the server dependently on the environment. Some defaults are set to bring up a core process.
+
+## API
+
+    mazehall.app
+* express instance
+
+    mazehall.serve()
+* starts the server process with defaults or env settings
+
+    mazehall.server
+* pointer to an instance of running server
+
+## Predefined URIs
+
+    app.get "/modules/aggregated.js"
+    app.get "/modules/aggregated.css"
+* aggregated javascript and css resources from all enabled modules
+
 
 ### Environment variables
 

@@ -1,6 +1,6 @@
 {
   "name": "mazehall",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "a mean stack framework with clustering and plugin support",
   "main": "index.js",
   "scripts": {

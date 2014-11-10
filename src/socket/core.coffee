@@ -1,6 +1,4 @@
 socket  = require 'socket.io'
-mazehall = require 'mazehall'
-
 authorization = require('./authorization')
 modules = require '../modules'
 secrets = require '../secrets'
@@ -22,11 +20,11 @@ events =
   error: (socket) ->
     console.log "[socket:core] %s connection error", @handshake.address
 
-manager = ->
+manager = (server) ->
   return console.log "[socket:core] skipped socket init"  unless secrets?.mazehall?.socket?
   console.log "[socket:core] init socket"
 
-  io = socket(mazehall.server);
+  io = socket(server);
   io.on 'connection', authorization.authOnEvent
     secret: secrets.mazehall.socket
     timeout: 15000

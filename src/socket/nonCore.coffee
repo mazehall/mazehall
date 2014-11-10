@@ -1,19 +1,19 @@
 jwt = require "jsonwebtoken"
-mazehall = require "mazehall"
 io = require "socket.io-client"
 
 modules = require "../modules"
 secrets = require '../secrets'
 
 events = []
-components = mazehall.components
+components = ''
 tokenData = {components: components}
 
-manager = ->
+manager = (coreSocket, initComponents) ->
+  components = initComponents
   return console.log "[socket:#{components}] skipped socket init"  unless secrets?.mazehall?.socket?
   console.log "[socket:#{components}] init socket"
 
-  socket = io "#{mazehall.coreSocket}"
+  socket = io "#{coreSocket}"
 
   console.log "[socket:#{components}] core server > #{socket.io.uri}"
 

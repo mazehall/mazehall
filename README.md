@@ -25,20 +25,20 @@ This starts the server dependently on the environment. Some defaults are set to 
 
 ## API
 
-    mazehall.app
-* express instance
+* `mazehall.app`
+  * express instance
 
-    mazehall.serve()
-* starts the server process with defaults or env settings
+* `mazehall.serve()`
+  * starts the server process with defaults or env settings
 
-    mazehall.server
-* pointer to an instance of running server
+* `mazehall.server`
+  * pointer to an instance of running server
 
 ## Predefined URIs
 
     app.get "/modules/aggregated.js"
     app.get "/modules/aggregated.css"
-* aggregated javascript and css resources from all enabled modules
+  * aggregated javascript and css resources from all enabled modules
 
 
 ### Environment variables

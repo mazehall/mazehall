@@ -1,5 +1,4 @@
 modules = require './modules'
-aggregate = require "./aggregate"
 
 bootstrap = (app, components, callback) ->
   console.log 'bootstrap non core'
@@ -12,21 +11,8 @@ bootstrap = (app, components, callback) ->
       console.log 'enabling mazehall modules failed' if err
       return callback err if err
 
-      #run aggregate
-      modules.aggregateAsset()
-
       #run routing callbacks
       modules.runPreRoutingCallbacks app
-
-      app.get "/modules/aggregated.js", (req, res) ->
-        res.setHeader "content-type", "text/javascript"
-        aggregate.aggregated "js", (if req.query.group then req.query.group else "footer"), (data) ->
-          res.send data
-
-      app.get "/modules/aggregated.css", (req, res) ->
-        res.setHeader "content-type", "text/css"
-        aggregate.aggregated "css", (if req.query.group then req.query.group else "header"), (data) ->
-          res.send data
 
       #run routing callbacks
       modules.runRoutingCallbacks app

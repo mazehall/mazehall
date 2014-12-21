@@ -2,7 +2,6 @@ socket  = require 'socket.io'
 express = require 'express'
 
 modules = require './modules'
-aggregate = require "./aggregate"
 
 app = express()
 

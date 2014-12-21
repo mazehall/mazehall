@@ -34,13 +34,6 @@ This starts the server dependently on the environment. Some defaults are set to 
 * `mazehall.server`
   * pointer to an instance of running server
 
-## Predefined URIs
-
-    app.get "/modules/aggregated.js"
-    app.get "/modules/aggregated.css"
-  * aggregated javascript and css resources from all enabled modules
-
-
 ### Environment variables
 
 #### Port of server process
@@ -50,7 +43,7 @@ This starts the server dependently on the environment. Some defaults are set to 
 
 #### Component Id
 ```
-    MAZEHALL_COMPONENTS = 'core'
+    MAZEHALL_COMPONENTS = 'api'
 ```
 
 - string to identify the kind of server process like 'jsonApi' or 'admin' 

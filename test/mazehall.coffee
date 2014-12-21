@@ -3,8 +3,8 @@ mazehall = require './mazehall'
 
 describe 'mazehall functions', ->
 
-    beforeEach ->
-        return
+  beforeEach ->
+    return
 
-    it 'should be tested', (done) ->
-        done()
+  it 'should ', (done) ->
+    done()

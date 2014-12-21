@@ -2,7 +2,6 @@ path = require 'path'
 fs = require 'fs'
 shell = require 'shelljs'
 
-aggregate = require "./aggregate"
 utils = require "./utils"
 
 modules =
@@ -192,11 +191,5 @@ modules =
     for name, data of modules.callbacks
       console.log " -> of module #{name}"
       data.app.usePostRouting app if data.app?.usePostRouting? && typeof data.app.usePostRouting == "function"
-
-  aggregateAsset: ->
-    for name, data of modules.callbacks
-      if data.app?.aggregateAssets?
-        for asset in data.app.aggregateAssets
-          aggregate.aggregateAsset.apply null, [name, modules.appModuleSource, asset.type, asset.file, asset.options]
 
 module.exports = modules

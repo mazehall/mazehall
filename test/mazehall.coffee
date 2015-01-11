@@ -1,5 +1,6 @@
 rewire = require 'rewire'
 assert = require 'assert'
+expect = require('chai').expect
 request = require 'supertest'
 mazehall = rewire '../lib/mazehall'
 express = require 'express'
@@ -13,7 +14,7 @@ describe 'mazehall', ->
 
     it 'should throw an error without first argument', (done) ->
       assert.throws () ->
-        mazehall.init()
+        mazehall.initExpress()
       , /first argument/
       done()
 
@@ -33,18 +34,18 @@ describe 'mazehall', ->
 
     it 'should register "cloud" tagged components only', (done) ->
       process.env.MAZEHALL_COMPONENTS = 'cloud,fake'
-      stream = mazehall.init express(), {appModuleSource: 'test/fixtures/test_modules'}
+      mazehall.loadStream {appModuleSource: 'test/fixtures/test_modules'}
+      stream = mazehall.moduleStream
+      stream.onValue (x) ->
+        expect ['admin', 'restapi']
+        .to.include x.module
       counterValue = stream.scan (sum, x) ->
         return sum + 1
       , 0
       counterValue.onValue (x) ->
         done() if x is 2
-      stream.onValue (x) ->
-        if x.module not in ['admin', 'restapi']
-          assert.fail x.module + ' module not to be expected'
-          done()
       stream.onError (e) ->
-        assert.fail(e)
+        done(e)
 
 
   describe 'express integration', ->

@@ -1,8 +1,16 @@
 {
   "name": "mazehall",
-  "version": "0.4.0",
-  "description": "load and register your express stuff from modules",
+  "version": "0.5.0",
+  "description": "flexible module management with a reactive streaming interface",
   "main": "index.js",
+  "keywords": [
+    "mazehall",
+    "module",
+    "express",
+    "frp",
+    "reactive",
+    "stream"
+  ],
   "scripts": {
     "test": "mocha"
   },
@@ -16,13 +24,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "commander": "~2.6.0",
-    "jsonwebtoken": "^3.2.0",
     "kefir": "~0.5",
-    "lodash": "~2.4.1",
-    "shelljs": "^0.3.0",
-    "socket.io": "~1.2.1",
-    "uglify-js": "~2.4.16",
     "winston": "^0.8.3"
   },
   "devDependencies": {

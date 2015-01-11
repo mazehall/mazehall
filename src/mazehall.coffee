@@ -3,31 +3,48 @@ _r = require 'kefir'
 
 mazehall = {}
 
+mazehall.moduleStream = _r.bus()
+
 mazehall.getComponentMask = ->
   components = (process.env.MAZEHALL_COMPONENTS ||  '').split ","
   if (components.indexOf "core") >= 0
     components = ['']
   return components
 
-mazehall.init = (app, options={}) ->
-  if not app
-    throw new Error 'first argument "app" required'
-  componentMask = mazehall.getComponentMask()
 
+### generate and return load stream
+
+directory:   --d---d---|
+dirEmitter:  ---de--de-|  {module:'x',path:'<modulePath>'}
+.flatMap:    ---pj--pj-|  {module:'x',path:'<modulePath>',pkg:{<package.json>}}
+.filter:     ---pj--pj-|  mazehall:true
+.filter:     ---pj-----|  componentMask
+return:      ---m------|
+moduleStream ---ml-------  {module:'x',components:['a','']}
+###
+mazehall.loadStream = (options={}) ->
+  componentMask = mazehall.getComponentMask()
   directoryStream = _r.fromBinder modules.dirEmitter(options.appModuleSource if options.appModuleSource)
   packagesStream = directoryStream
-    .flatMap modules.readPackageJson
-    .filter (x) -> x.pkg.mazehall
-  mazehallStream = packagesStream.filter isPackageEnabled componentMask
-  mazehallStream.onValue (module) ->
-    _m = require module.path
-    _m.usePreRouting? app
-    _m.useRouting? app
-    _m.usePostRouting? app
+  .flatMap modules.readPackageJson
+  .filter (x) -> x.pkg.mazehall
+  .filter isPackageEnabled componentMask
 
-  responseStream = _r.bus()
-  responseStream.plug mazehallStream.map (e) -> {module: e.pkg.name, components: e.pkg.components}
-  return responseStream
+  mazehallStream = packagesStream
+  .map (module) ->
+    require module.path
+
+  mazehall.moduleStream.plug packagesStream.map (e) -> {module: e.pkg.name, components: e.pkg.components}
+  return mazehallStream
+
+
+mazehall.initExpress = (app, options={}) ->
+  if not app
+    throw new Error 'first argument "app" required'
+  mazehall.loadStream options
+  .onValue (module) ->
+    module.useRouting? app
+
 
 isPackageEnabled = (mask) ->
   (item) ->

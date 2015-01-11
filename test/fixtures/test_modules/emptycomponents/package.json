@@ -1,0 +1,10 @@
+{
+  "name": "emptyCompTest",
+  "private": true,
+  "version": "0.1.0",
+  "description": "User Interface",
+  "main": "index.js",
+  "mazehall": true,
+  "author": "Jens Klose",
+  "license": "MIT"
+}

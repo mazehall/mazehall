@@ -1,0 +1,11 @@
+{
+  "name": "restapi",
+  "private": true,
+  "version": "0.1.0",
+  "description": "User Interface",
+  "main": "index.js",
+  "mazehall": true,
+  "components": ["api","admin","cloud"],
+  "author": "Jens Klose",
+  "license": "MIT"
+}

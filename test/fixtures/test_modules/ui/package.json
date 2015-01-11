@@ -1,0 +1,10 @@
+{
+  "name": "ui",
+  "private": true,
+  "version": "0.1.0",
+  "description": "User Interface",
+  "main": "index.js",
+  "components": ["ui"],
+  "author": "Jens Klose",
+  "license": "MIT"
+}

@@ -8,6 +8,9 @@ var bases = {
   src: './src/**/*.coffee',
   dist: './lib/'
 };
+var coffeeOptions = {
+  bare: true
+}
 
 gulp.task('clean', function() {
   return gulp.src(bases.dist)
@@ -16,7 +19,7 @@ gulp.task('clean', function() {
 
 gulp.task('compile-coffee', ['clean'], function() {
   gulp.src(bases.src)
-    .pipe(coffee())
+    .pipe(coffee(coffeeOptions))
     .pipe(gulp.dest(bases.dist));
 });
 

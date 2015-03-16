@@ -12,15 +12,17 @@ mazehall.getComponentMask = ->
   return components
 
 
-### generate and return load stream
+### events in time
 
-directory:   --d---d---|
-dirEmitter:  ---de--de-|  {module:'x',path:'<modulePath>'}
-.flatMap:    ---pj--pj-|  {module:'x',path:'<modulePath>',pkg:{<package.json>}}
-.filter:     ---pj--pj-|  mazehall:true
-.filter:     ---pj-----|  componentMask
-return:      ---m------|
-moduleStream ---ml-------  {module:'x',components:['a','']}
+  mazehallStream
+  directory:   --d---d--|
+  dirEmitter:    D---D--|     {module:'x',path:'<modulePath>'}
+  .flatMap:      -Dp---Dp-|   {module:'x',path:'<modulePath>',pkg:{<package.json>}}
+  .filter:       -Dp---Dp-|   mazehall:true
+  .filter:       -Dp------|   componentMask
+  return:         M-------|
+
+  moduleStream ---m---------  {module:'x',components:['a','']}
 ###
 mazehall.loadStream = (options={}) ->
   componentMask = mazehall.getComponentMask()

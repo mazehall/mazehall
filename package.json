@@ -1,7 +1,7 @@
 {
   "name": "mazehall",
-  "version": "0.5.0",
-  "description": "flexible module management with a reactive streaming interface",
+  "version": "0.6.0",
+  "description": "flexible module management for applications with a reactive streaming interface",
   "main": "index.js",
   "keywords": [
     "mazehall",
@@ -22,21 +22,26 @@
     "name": "Mazehall",
     "email": "npm@mazehall.com"
   },
+  "bin": {
+    "mazehall": "./bin/mazehall",
+    "mazehall-init": "./bin/mazehall-init.js",
+    "mazehall-module": "./bin/mazehall-module.js"
+  },
   "license": "MIT",
   "dependencies": {
-    "kefir": "~0.5",
-    "winston": "^0.8.3"
+    "commander": "^2.7.1",
+    "kefir": "^1.2.0",
+    "shelljs": "^0.4.0"
   },
   "devDependencies": {
-    "chai": "^1.10.0",
-    "coffee-script": "^1.8.0",
+    "chai": "^2.1.2",
+    "coffee-script": "^1.9.1",
     "express": "~4.10",
-    "gulp": "^3.8.10",
+    "gulp": "^3.8.11",
+    "gulp-coffee": "^2.3.1",
     "gulp-clean": "^0.3.1",
-    "gulp-coffee": "^2.2.0",
-    "gulp-watch": "^3.0.0",
+    "gulp-util": "^3.0.4",
     "mocha": "~2",
-    "rewire": "^2.1.3",
-    "supertest": "^0.15.0"
+    "rewire": "^2.3.1"
   }
 }

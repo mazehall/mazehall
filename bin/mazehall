@@ -1,0 +1,13 @@
+#!/usr/bin/env node
+
+var program = require("commander"),
+    version = require("../package").version;
+
+program.version(version)
+       .command("init <appname>", "creates an mazehall app in the current directory")
+       .command("module [name]", "add a new module into the mazehall app")
+       .parse(process.argv);
+
+if (program.args.length < 1) {
+    program.help();
+}

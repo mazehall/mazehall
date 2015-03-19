@@ -10,21 +10,63 @@ An express interface is included. Stream all your routes into your app or config
     $ [sudo] npm install mazehall --save
 
 
-## Usage with express application
+## Usage
 
-Create your own new application with an app.js like:
+### Manually case
+
+Create your own new application with an testable app.js like:
 
     var mazehall = require('mazehall');
     var express = require('express');
     
-    var app, enableStream;
+    var app, server;
     app = express();
-    enableStream = mazehall.initExpress(app);
-    mazehall.moduleStream.log();
-    app.listen(3000);
+    server = require('http').Server(app);
+    
+    mazehall.moduleStream.log('module loader');
+    mazehall.initExpress(app);
+    
+    module.exports = server;
+    
+and a startup file server.js like:
+
+    var server = require('./app.js');
+    
+    var port;
+    port = process.env.PORT || 3000
+    server.listen(port, function() {
+      console.log('server listen on port: ' + port);
+    });
     
 
+### Mazehall cli case
+
+Let's do it mazehall cli.  
+
+    $ [sudo] npm install mazehall -g
+    
+ A global installation is an optional step. You could also call the cli interface in the node_modules/.bin directory.
+ 
+    mkdir myapp
+    cd myapp
+    mazehall init
+    
+At this point you have an mazehall application with express integration. Now you need at least an application module. 
+
+    mazehall module gui
+    
+That's all.
+
+    npm start
+    
+    server listen on port: 3000
+    module loader <value> { module: 'gui', components: [ 'ui', '' ] }
+    
+
+
 ## API
+
+### Module loader interface
 
 * `mazehall.moduleStream`
   * handle a module stream bus
@@ -37,7 +79,7 @@ Create your own new application with an app.js like:
   * starts the module enable stream and processing for express interface
 
 
-## Module interface
+### Module interface
 
 By default Mazehall is looking for modules in the ```app_module/*``` directories.
 Place a package.json file in the modules and add at least the ```mazehall: true``` key.

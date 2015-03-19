@@ -1,7 +1,6 @@
 rewire = require 'rewire'
 assert = require 'assert'
 expect = require('chai').expect
-request = require 'supertest'
 mazehall = rewire '../lib/mazehall'
 express = require 'express'
 _r=  require 'kefir'
@@ -11,12 +10,6 @@ describe 'mazehall', ->
     origEnv = process.env
     afterEach ->
       process.env = origEnv
-
-    it 'should throw an error without first argument', (done) ->
-      assert.throws () ->
-        mazehall.initExpress()
-      , /first argument/
-      done()
 
     it 'should set core as default module component', (done) ->
       assert.deepEqual [''], mazehall.getComponentMask()
@@ -53,4 +46,18 @@ describe 'mazehall', ->
     beforeEach ->
       app = express()
 
-    it 'should register routes'
+    it 'should throw an error without first argument', (done) ->
+      assert.throws () ->
+        mazehall.initExpress()
+      , /first argument/
+      done()
+
+    it 'should call the useRouting api with express object', (done) ->
+      moduleStub =
+        useRouting: (test) ->
+          expect(test).to.equal(app)
+          expect(test).itself.to.respondTo('use')
+          done()
+      mazehall.loadStream = () ->
+        _r.constant moduleStub
+      mazehall.initExpress(app)

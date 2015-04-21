@@ -1,11 +1,12 @@
 {
   "name": "mazehall",
-  "version": "0.6.0",
-  "description": "flexible module management for applications with a reactive streaming interface",
+  "version": "1.0.0",
+  "description": "Application framework with flexible module management and a streaming interface. Command line interface supported.",
   "main": "index.js",
   "keywords": [
     "mazehall",
     "module",
+    "plugin",
     "express",
     "frp",
     "reactive",

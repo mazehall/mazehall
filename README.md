@@ -7,7 +7,7 @@ An express interface is included. Stream all your routes into your app or config
 
 ## Installation
 
-    $ [sudo] npm install mazehall --save
+    $ [sudo] npm install --save mazehall
 
 
 ## Usage
@@ -39,13 +39,13 @@ and a startup file server.js like:
     });
     
 
-### Mazehall cli case
+### Command line case
 
 Let's do it mazehall cli.  
 
     $ [sudo] npm install mazehall -g
     
- A global installation is an optional step. You could also call the cli interface in the node_modules/.bin directory.
+A global installation is an optional step. You could also call the cli interface in the node_modules/.bin directory.
  
     mkdir myapp
     cd myapp
@@ -99,6 +99,11 @@ An example package.json
       "license": "MIT"
     }
 ```
+
+
+### Plugin interface
+
+/* tbd */
 
 ### Environment variables
 

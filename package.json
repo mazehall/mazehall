@@ -25,13 +25,15 @@
   "bin": {
     "mazehall": "./bin/mazehall",
     "mazehall-init": "./bin/mazehall-init.js",
-    "mazehall-module": "./bin/mazehall-module.js"
+    "mazehall-module": "./bin/mazehall-module.js",
+    "mazehall-plugin": "./bin/mazehall-plugin.js"
   },
   "license": "MIT",
   "dependencies": {
     "commander": "^2.7.1",
     "kefir": "^1.2.0",
-    "shelljs": "^0.4.0"
+    "mongojs": "~0.18.2",
+    "semver": "^4.3.3"
   },
   "devDependencies": {
     "chai": "^2.1.2",

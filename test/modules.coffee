@@ -16,7 +16,7 @@ describe 'dirEmitter', (done) ->
 
   it 'should emit dir names from fixtures', (done) ->
     testStream = _r.fromBinder modules.dirEmitter('test/fixtures/test_modules')
-    .pluck('module')
+    .map (x) -> x.module
     .bufferWhile()
     testStream.onValue (x) ->
       assert.deepEqual x, ["admin","api","emptycomponents","ui"]

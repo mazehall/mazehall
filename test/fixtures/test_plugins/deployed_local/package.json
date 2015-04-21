@@ -1,0 +1,15 @@
+{
+	"name": "deployed_local",
+	"private": true,
+	"version": "0.1.0",
+	"description": "User Interface",
+  	"mazehall": true,
+	"mazehall_deployed": "local",
+	"main": "index.js",
+	"components": [
+		"ui",
+		"service"
+	],
+	"author": "Jens Klose",
+	"license": "MIT"
+}

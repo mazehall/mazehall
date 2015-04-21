@@ -1,0 +1,14 @@
+{
+	"name": "deployed_synced",
+	"private": true,
+	"version": "2.2.1",
+	"description": "User Interface",
+  	"mazehall": true,
+	"mazehall_deployed": "synced",
+	"main": "index.js",
+	"components": [
+		"admin"
+	],
+	"author": "Jens Klose",
+	"license": "MIT"
+}

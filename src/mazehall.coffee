@@ -1,8 +1,8 @@
 modules = require './modules'
 _r = require 'kefir'
+modelplugin = require "./models/plugin"
 
 mazehall = {}
-
 mazehall.moduleStream = _r.bus()
 
 mazehall.getComponentMask = ->
@@ -39,6 +39,26 @@ mazehall.loadStream = (options={}) ->
   mazehall.moduleStream.plug packagesStream.map (e) -> {module: e.pkg.name, components: e.pkg.components}
   return mazehallStream
 
+mazehall.loadPluginStream = (options={}) ->
+  directoryStream = _r.fromBinder modules.dirEmitter(options.appModuleSource if options.appModuleSource)
+  directoryStream.flatMap modules.readPackageJson
+  .filter (x) -> x.pkg.mazehall
+
+mazehall.setDatabase = (provider, options) ->
+  dataprovider = require "./models/dataprovider"
+  dataprovider.setProvider provider, options
+
+mazehall.initPlugins = (app, sync=false, options={}) ->
+  throw new Error 'first argument "app" required' if not app
+  pluginSource = if options.pluginSource then options.pluginSource else "node_modules"
+  pluginStream = mazehall.loadPluginStream {appModuleSource: pluginSource}
+  pluginStream.onValue (module) ->
+      require(module.path) app
+
+  return if sync isnt true
+  mazecli = require "./cli"
+  stream = _r.fromEvent modelplugin.tailCursor(), "data"
+  stream.onValue -> mazecli.pluginSync()
 
 mazehall.initExpress = (app, options={}) ->
   if not app

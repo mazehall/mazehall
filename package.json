@@ -12,6 +12,13 @@
     "reactive",
     "stream"
   ],
+  "files": [
+    "LICENSE",
+    "README.md",
+    "index.js",
+    "bin/",
+    "lib/"
+  ],
   "scripts": {
     "test": "mocha"
   },

@@ -103,7 +103,10 @@ An example package.json
 
 ### Plugin interface
 
-/* tbd */
+#### Usage
+
+      mazehall-plugin [install|remove|update] [name]
+      
 
 ### Environment variables
 

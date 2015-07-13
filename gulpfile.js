@@ -2,7 +2,7 @@
 var gulp = require('gulp');
 var gutil = require('gulp-util');
 var coffee = require("gulp-coffee");
-var clean = require('gulp-clean');
+var del = require('del');
 
 var bases = {
   src: './src/**/*.coffee',
@@ -12,16 +12,19 @@ var coffeeOptions = {
   bare: true
 }
 
-gulp.task('clean', function() {
-  return gulp.src(bases.dist, {read: false})
-    .pipe(clean());
-});
-
-gulp.task('compile-coffee', ['clean'], function() {
+var compileCoffee = function() {
   gulp.src(bases.src)
     .pipe(coffee(coffeeOptions).on('error', gutil.log))
     .pipe(gulp.dest(bases.dist));
+}
+
+gulp.task('clean', function(cb) {
+  del([bases.dist], cb);
 });
+
+gulp.task('compile-coffee', compileCoffee);
+
+gulp.task('build', ['clean'], compileCoffee);
 
 gulp.task('watch-coffee', function () {
   gulp.watch(bases.src, ['compile-coffee']);

@@ -1,7 +1,7 @@
 rewire = require 'rewire'
 assert = require 'assert'
 expect = require('chai').expect
-mazehall = rewire '../lib/mazehall'
+mazehall = rewire '../src/mazehall'
 express = require 'express'
 _r=  require 'kefir'
 
@@ -52,9 +52,8 @@ describe 'mazehall', ->
       , /first argument/
       done()
 
-    it 'should call the useRouting api with express object', (done) ->
-      moduleStub =
-        useRouting: (test) ->
+    it 'should call the module constructor with express object', (done) ->
+      moduleStub = (test) ->
           expect(test).to.equal(app)
           expect(test).itself.to.respondTo('use')
           done()
@@ -66,9 +65,10 @@ describe 'mazehall', ->
       app.set "done", done
       mazehall.initPlugins app, false, {pluginSource: "test/fixtures/test_plugins"}
 
+
   describe "database connection", ->
 
-    beforeEach -> mazehall = rewire "../lib/mazehall"
+    beforeEach -> mazehall = rewire "../src/mazehall"
 
     it "should return a singleton", (done) ->
       instance1 = require "../src/models/dataprovider"
@@ -94,7 +94,7 @@ describe 'mazehall', ->
           @onValue = -> caller++
           @
 
-      mazehall.setDatabase "mongodb", "mongodb://localhost/"
+      mazehall.setDatabase "mongodb", "mongodb://foo.tld/"
       mazehall.initPlugins express(), true
 
       done assert.equal caller, 3
@@ -108,7 +108,7 @@ describe 'mazehall', ->
     it "should save provider info when is set over setDatabase", (done) ->
       providerInfo = {name: "test", opts: {"key": "value"}}
       mazehall.setDatabase providerInfo.name, providerInfo.opts
-      dataprovider = require "../lib/models/dataprovider"
+      dataprovider = require "../src/models/dataprovider"
 
       expect(providerInfo).to.deep.equal dataprovider.getProvider()
       done()
@@ -117,8 +117,8 @@ describe 'mazehall', ->
     mazecli = null
     plugins = {}
     beforeEach ->
-      mazehall = rewire "../lib/mazehall"
-      mazecli  = rewire "../lib/cli"
+      mazehall = rewire "../src/mazehall"
+      mazecli  = rewire "../src/cli"
       stream   = mazehall.loadPluginStream {appModuleSource: "test/fixtures/test_plugins"}
       mazecli.__set__ "console", log: -> return
       mazecli.__set__ "process", exit: -> return

@@ -3,7 +3,7 @@ _r = require 'kefir'
 modelplugin = require "./models/plugin"
 
 mazehall = {}
-mazehall.moduleStream = _r.bus()
+mazehall.moduleStream = _r.pool()
 
 mazehall.getComponentMask = ->
   components = (process.env.MAZEHALL_COMPONENTS ||  '').split ","
@@ -26,7 +26,7 @@ mazehall.getComponentMask = ->
 ###
 mazehall.loadStream = (options={}) ->
   componentMask = mazehall.getComponentMask()
-  directoryStream = _r.fromBinder modules.dirEmitter(options.appModuleSource if options.appModuleSource)
+  directoryStream = _r.stream modules.dirEmitter(options.appModuleSource if options.appModuleSource)
   packagesStream = directoryStream
   .flatMap modules.readPackageJson
   .filter (x) -> x.pkg.mazehall
@@ -40,7 +40,7 @@ mazehall.loadStream = (options={}) ->
   return mazehallStream
 
 mazehall.loadPluginStream = (options={}) ->
-  directoryStream = _r.fromBinder modules.dirEmitter(options.appModuleSource if options.appModuleSource)
+  directoryStream = _r.stream modules.dirEmitter(options.appModuleSource if options.appModuleSource)
   directoryStream.flatMap modules.readPackageJson
   .filter (x) -> x.pkg.mazehall
 
@@ -65,7 +65,7 @@ mazehall.initExpress = (app, options={}) ->
     throw new Error 'first argument "app" required'
   mazehall.loadStream options
   .onValue (module) ->
-    module.useRouting? app
+    module app
 
 
 isPackageEnabled = (mask) ->

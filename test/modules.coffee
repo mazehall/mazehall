@@ -8,14 +8,14 @@ fs = require 'fs'
 describe 'dirEmitter', (done) ->
 
   it 'should emit error and end if dir not found', (done) ->
-    testStream = _r.fromBinder modules.dirEmitter()
+    testStream = _r.stream modules.dirEmitter()
     testStream.onError (x) ->
       assert.equal 'ENOENT', x.code
     testStream.onEnd () ->
       done()
 
   it 'should emit dir names from fixtures', (done) ->
-    testStream = _r.fromBinder modules.dirEmitter('test/fixtures/test_modules')
+    testStream = _r.stream modules.dirEmitter('test/fixtures/test_modules')
     .map (x) -> x.module
     .bufferWhile()
     testStream.onValue (x) ->
@@ -24,7 +24,7 @@ describe 'dirEmitter', (done) ->
       done()
 
   it 'should load package.json files', (done) ->
-    testStream = _r.fromBinder modules.dirEmitter('test/fixtures/test_modules')
+    testStream = _r.stream modules.dirEmitter('test/fixtures/test_modules')
     dirValue =
       path: 'test/fixtures/test_modules/admin'
 

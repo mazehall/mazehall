@@ -21,7 +21,7 @@
   ],
   "scripts": {
     "test": "mocha",
-    "prepublish": "npm test && gulp run build"
+    "prepublish": "npm test && gulp build"
   },
   "repository": {
     "type": "git",

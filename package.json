@@ -1,6 +1,6 @@
 {
   "name": "mazehall",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Application framework with flexible module management and a streaming interface. Command line interface supported.",
   "main": "index.js",
   "keywords": [
@@ -20,6 +20,7 @@
     "lib/"
   ],
   "scripts": {
+    "build": "./node_modules/.bin/gulp build",
     "test": "mocha"
   },
   "repository": {

@@ -479,16 +479,12 @@ exports.template =
     # @return {string}
     ###
     index_js: ->
-      template = ->
-        path = require("path")
-        serveStatic = require("serve-static")
-        module.exports = useRouting: (app) ->
-          env = process.env.NODE_ENV or "development"
-          app.use serveStatic(path.join(__dirname, if env is "development" then "public/src" else "public/dist"))
-          return
-        return
-
-      "(#{template.toString()}).call(this);"
+      content = 'module.exports = function(app) {\n' +
+      '  app.use(\'/namespace\', function(req, res, next) {\n' +
+      '    res.send(\'Hallo Mazehall Module\');\n' +
+      '  })\n' +
+      '}'
+      content
 
     ###*
     # Template : package.json

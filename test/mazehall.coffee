@@ -78,27 +78,6 @@ describe 'mazehall', ->
 
       done assert.notEqual instance1.p, instance2.p-1
 
-    it "should listen to cursor event 'data' when sync is true active", (done) ->
-      caller = 0
-      values = {modules: {module_1: {name: "module_1"}, module_2: {name: "module_2"}}}
-      stream = mazehall.loadPluginStream {appModuleSource: "test/fixtures/test_plugins"}
-      mazehall.__set__ "mazehall.loadPluginStream", -> stream
-      mazehall.__set__ "modelplugin.tailCursor", ->
-        caller++
-        values
-      mazehall.__set__ "_r",
-        fromEvent: (target, event) ->
-          caller++
-          expect(target).to.deep.equal values
-          assert.equal event, "data"
-          @onValue = -> caller++
-          @
-
-      mazehall.setDatabase "mongodb", "mongodb://foo.tld/"
-      mazehall.initPlugins express(), true
-
-      done assert.equal caller, 3
-
     it "should throw an error when using database without provider info", (done) ->
       assert.throws ->
         require("./models/plugin").tailCursor()
@@ -210,7 +189,17 @@ describe 'mazehall', ->
       , Error
       done()
 
+    it "should call plugin.initSync method when sync flag is true", (done) ->
+      stream = mazehall.loadPluginStream {appModuleSource: "test/fixtures/test_plugins"}
+      mazehall.__set__ "mazehall.loadPluginStream", -> stream
+      mazehall.__set__ "modelplugin", initSync: done
+
+      mazehall.setDatabase "mongodb", "mongodb://foo.tld/"
+      mazehall.initPlugins express(), true
+
   describe "plugins", ->
+    beforeEach ->
+      mazehall = rewire "../src/mazehall"
 
     it "should throw an error when called init without argument", (done) ->
       assert.throws ->

@@ -25,7 +25,7 @@ modelsPlugin =
   setPlugins: ->
     @provider().save arguments...
 
-  tailCursor: ->
-    @provider().tailCursor arguments...
+  initSync: ->
+    @provider().initSync arguments...
 
 module.exports = modelsPlugin

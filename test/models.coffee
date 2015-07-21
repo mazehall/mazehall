@@ -71,7 +71,7 @@ describe "models", ->
       , Error
       done()
 
-    it "should throw an error when call getter whit non provider", (done) ->
+    it "should throw an error when getProvider is used before one is set", (done) ->
       dataprovider.providers = dataprovider.instances = {}
       assert.throws ->
         dataprovider.getProvider()

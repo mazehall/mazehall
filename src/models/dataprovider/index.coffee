@@ -1,16 +1,27 @@
-provider = {}
-database =
-  setProvider: (database, options = {}) ->
-    throw new Error 'first argument database "provider" required' if not database
-    provider.name = database
-    provider.opts = options
+dataprovider = module.exports
+dataprovider.providers = {}
+dataprovider.instances = {}
 
-  getProvider: ->
-    throw new Error 'database provider required - use setProvider' if not provider.name
-    provider
+dataprovider.setProvider = (database, options = {}) ->
+  throw new Error 'first argument must be an provider name' if not database
+  @providers[database] =
+    name : database
+    opts : options
+  @providers.use = database
 
-  getPlugin: ->
-    provider = @getProvider()
-    require("./#{provider.name}/plugin") provider.opts
+dataprovider.getProvider = ->
+  throw new Error 'database provider required - use setProvider' if not @providers.use
+  @providers[@providers.use]
 
-module.exports = database
+dataprovider.getPlugin = ->
+  instance = "plugin"
+  dataprovider.instances[instance] = loadModel instance unless dataprovider.instances[instance]
+  dataprovider.instances[instance]
+
+loadModel = (model) ->
+  try
+    provider = dataprovider.getProvider()
+    instance = require("./#{provider.name}/#{model}") provider.opts
+  catch error
+    throw new Error "provider #{provider.name} does not have a #{model} model"
+  instance

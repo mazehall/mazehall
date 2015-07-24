@@ -55,10 +55,7 @@ mazehall.initPlugins = (app, sync=false, options={}) ->
   pluginStream.onValue (module) ->
       require(module.path) app
 
-  return if sync isnt true
-  mazecli = require "./cli"
-  stream = _r.fromEvent modelplugin.tailCursor(), "data"
-  stream.onValue -> mazecli.pluginSync()
+  modelplugin.initSync() if sync is true
 
 mazehall.initExpress = (app, options={}) ->
   if not app

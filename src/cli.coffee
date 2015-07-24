@@ -1,11 +1,7 @@
 mazehall = require "./mazehall"
 program = require "commander"
-semver = require "semver"
 exec = require("child_process").exec
 fs = require "fs"
-modelPlugin = require "../lib/models/plugin"
-
-KEY_DEPLOYED = "mazehall_deployed"
 
 ###*
 # Creates a new module skeleton
@@ -95,9 +91,8 @@ exports.createMazeApp = (path, program) ->
 # Install a new plugin
 #
 # @param  {string} name
-  @param  {boolean} [withDeployment = false]
 ###
-exports.installPlugin = (name, withDeployment = false) ->
+exports.installPlugin = (name) ->
   workingDir = "#{process.cwd()}/"
   modulesDir = "node_modules"
   callback = arguments[arguments.length-1]
@@ -117,10 +112,6 @@ exports.installPlugin = (name, withDeployment = false) ->
     callback?()
     return console.log err.message if err
     console.log "\u001b[32m#{"mazehall plugin '#{name}' was installed"}\u001b[0m"
-    return if withDeployment is not true
-    exports.loadPluginPackage name, (data, filepath) ->
-      data[KEY_DEPLOYED] = "local"
-      fs.writeFile filepath, JSON.stringify(data, null, "\t")
 
 ###*
 # Update a local plugin
@@ -162,104 +153,6 @@ exports.removePlugin = (name, callback) ->
     console.log "\u001b[32m#{"mazehall plugin '#{name}' was removed"}\u001b[0m"
 
 ###*
-# Synchronizes plugins
-#
-# @param {object} remotePlugins
-###
-exports.synchronizes = (plugins) ->
-  return if not plugins or typeof plugins isnt "object"
-  console.log  "   \u001b[35m#{"syncing plugins"} (%d)\u001b[0m", Object.keys(plugins).length
-
-  localPlugins = []
-  pluginStream = mazehall.loadPluginStream {appModuleSource: "node_modules"}
-  pluginStream.onValue (module) ->
-    localPlugins[module.pkg.name] = module
-  pluginStream.onEnd ->
-    remotePlugins = plugins
-    remoteInstall = []
-    callbackStack = []
-    syncingFinish = ->
-      process.exit 0 if counter isnt 0
-
-    ###* build array list of remote plugins *###
-    for name, plugin of remotePlugins
-      remoteInstall.push name if plugin.version?
-
-    ###* update or install exists plugin *###
-    for name, plugin of remotePlugins
-      continue if plugin.components?.length and not exports.pluginHasMask plugin.components
-      continue if localPlugins[name]?.pkg?.version is plugin.version
-
-      ###* install / update when not exists or version is smaller than remote *###
-      if not localPlugins[name] or not semver.gt(localPlugins[name]?.pkg?.version, plugin.version)
-        console.log "   \u001b[35m#{"sync"}\u001b[0m  : install #{name}@#{plugin.version}"
-        callbackStack["#{name}@#{plugin.version}"] = exports.installPlugin
-
-    ###* remove non remote listed plugins *###
-    for plugin, data of localPlugins
-      ###* remove when not in database exists *###
-      if plugin not in remoteInstall and data.pkg[KEY_DEPLOYED] isnt "local"
-        callbackStack[plugin] = exports.removePlugin
-        console.log "   \u001b[35m#{"sync"}\u001b[0m  : delete #{plugin}"
-
-      ###* push plugin into db when local version greater than remote *###
-      if plugin in remoteInstall and semver.gt(data.pkg.version, remotePlugins[plugin].version)
-        console.log "   \u001b[35m#{"sync"}\u001b[0m  : updating db #{plugin}@#{remotePlugins[plugin].version} -> #{data.pkg.version}"
-        exports.databaseInsertPlugin data
-
-      ###* push plugin into db when 'mazehall_deployed' is 'local' *###
-      if data.pkg?[KEY_DEPLOYED] is "local" and plugin not in remoteInstall
-        console.log "   \u001b[35m#{"sync"}\u001b[0m  : push #{plugin} into db"
-        exports.databaseInsertPlugin data
-
-    console.log  "   \u001b[35m#{"syncing end"}\u001b[0m"
-
-    counter = 0
-    length  = Object.keys(callbackStack).length
-    for plugin, method of callbackStack
-      method plugin, ->
-        counter++
-        syncingFinish() if counter is length
-
-  return@
-
-###*
-# Trigger the sync process
-#
-# @param {object} remotePlugins
-###
-exports.pluginSync = ->
-  return if @locked
-  @locked = true
-  plugins = require "./models/plugin"
-  plugins.getPlugins (err, plugins) ->
-    exports.synchronizes plugins if not err
-    exports.locked = false
-
-###*
-# Remove a installed Plugin from the database
-#
-# @param  {string} name
-###
-exports.databaseRemovePlugin = (name, database, connectionstring) ->
-  mazehall.setDatabase(database, connectionstring);
-  modelPlugin.deletePlugin name, (err, plugins) ->
-    if not err and name not in plugins
-      return console.log "\u001b[32m#{"mazehall plugin '#{name}' was removed from database"}\u001b[0m"
-    console.log "\u001b[31m#{"mazehall plugin '#{name}' was not found on database"}\u001b[0m"
-
-###*
-# Write plugindata into the database
-#
-# @param {object} plugin
-###
-exports.databaseInsertPlugin = (plugin) ->
-  modelPlugin.addPlugin plugin, (err) ->
-    if not err and plugin?.path
-      plugin.pkg[KEY_DEPLOYED] = "synced" if plugin.pkg?[KEY_DEPLOYED] is "local"
-      fs.writeFile "#{plugin.path}/package.json", JSON.stringify plugin.pkg, null, "\t"
-
-###*
 # Writes data to a file asynchronously
 #
 # @param {string} path
@@ -287,31 +180,6 @@ exports.createDir = (path, callback) ->
     callback and callback(path)
   catch e
     throw e if e.code isnt "EEXIST"
-
-###*
-# Loads a json file with parsing data
-#
-# @param  {string} filepath
-# @param  {callback} [callback]
-###
-exports.loadJsonFile = (filepath, callback) ->
-  fs.readFile filepath, (err, data) ->
-    callback.apply exports, [JSON.parse(data)] if not err and typeof callback is "function"
-
-###*
-# Loads the plugin package.json file
-#
-# @param {string} plugin
-# @param {callback} [callback]
-###
-exports.loadPluginPackage = (plugin, callback) ->
-  workingDir = "#{process.cwd()}/"
-  modulesDir = "node_modules"
-  pluginfile = "#{workingDir}#{modulesDir}/#{plugin}/package.json"
-  @loadJsonFile pluginfile, (data) ->
-    deployed = data?[KEY_DEPLOYED] isnt "local"
-    deployed = null if not data?[KEY_DEPLOYED]?
-    callback.apply exports, [data, pluginfile, deployed] if typeof callback is "function"
 
 ###*
 # Returns the name of Directory
@@ -361,16 +229,6 @@ exports.isAppModulesExists = (path) ->
 ###
 exports.hasAppModule = (modulename) ->
   fs.existsSync("#{process.cwd()}/app_modules/#{modulename}")
-
-###*
-# Checks if components are included in the mask
-#
-# @param {array} components
-###
-exports.pluginHasMask = (components) ->
-  for component in components
-    return true if component in mazehall.getComponentMask()
-  false
 
 ###*
 #

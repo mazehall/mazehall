@@ -40,14 +40,11 @@
   "license": "MIT",
   "dependencies": {
     "commander": "^2.8.1",
-    "kefir": "^2.7.1",
-    "mongojs": "~1.0.2",
-    "semver": "^5.0.1"
+    "kefir": "^2.7.1"
   },
   "devDependencies": {
     "chai": "^3.0.0",
     "coffee-script": "^1.9.3",
-    "del": "^1.2.0",
     "express": "~4.13",
     "gulp": "^3.9.0",
     "gulp-coffee": "^2.3.1",

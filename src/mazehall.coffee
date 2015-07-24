@@ -1,6 +1,5 @@
 modules = require './modules'
 _r = require 'kefir'
-modelplugin = require "./models/plugin"
 
 mazehall = {}
 mazehall.moduleStream = _r.pool()
@@ -44,18 +43,12 @@ mazehall.loadPluginStream = (options={}) ->
   directoryStream.flatMap modules.readPackageJson
   .filter (x) -> x.pkg.mazehall
 
-mazehall.setDatabase = (provider, options) ->
-  dataprovider = require "./models/dataprovider"
-  dataprovider.setProvider provider, options
-
-mazehall.initPlugins = (app, sync=false, options={}) ->
+mazehall.initPlugins = (app, options={}) ->
   throw new Error 'first argument "app" required' if not app
   pluginSource = if options.pluginSource then options.pluginSource else "node_modules"
   pluginStream = mazehall.loadPluginStream {appModuleSource: pluginSource}
   pluginStream.onValue (module) ->
-      require(module.path) app
-
-  modelplugin.initSync() if sync is true
+    require(module.path) app
 
 mazehall.initExpress = (app, options={}) ->
   if not app
@@ -63,7 +56,6 @@ mazehall.initExpress = (app, options={}) ->
   mazehall.loadStream options
   .onValue (module) ->
     module app
-
 
 isPackageEnabled = (mask) ->
   (item) ->

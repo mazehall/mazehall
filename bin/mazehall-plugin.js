@@ -16,14 +16,10 @@ if (program.args.length < 2) {
 try {
     switch(program.args[0]) {
         case "install":
-            mazecli.installPlugin(program.args[1], true);
+            mazecli.installPlugin(program.args[1]);
             break;
         case "remove":
-            if (program.args.length === 4) {
-                mazecli.databaseRemovePlugin(program.args[1], program.args[2], program.args[3]);
-            } else {
-                mazecli.removePlugin(program.args[1]);
-            }
+            mazecli.removePlugin(program.args[1]);
             break;
         case "update":
             mazecli.updatePlugin(program.args[1]);

@@ -6,7 +6,7 @@ var program = require("commander"),
 program.version(version)
        .command("init <appname>", "creates an mazehall app in the current directory")
        .command("module [name]", "add a new module into the mazehall app")
-       .command("plugin [command] [name] <database, connectionstring>", "manage a mazehall plugin")
+       .command("plugin [command] [name]", "manage a mazehall plugin")
        .parse(process.argv);
 
 if (program.args.length < 1) {

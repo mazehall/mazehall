@@ -1,6 +1,6 @@
 # Mazehall
 
-Mazehall is a flexible module loader system. Build on top of the Reactive Programming library 
+Mazehall is a flexible module loader system. Build on top of the Reactive Programming library
 [Kefir](https://pozadi.github.io/kefir/#).
 
 An express interface is included. Stream all your routes into your app or configure a mask on startup.
@@ -18,50 +18,50 @@ Create your own new application with an testable app.js like:
 
     var mazehall = require('mazehall');
     var express = require('express');
-    
+
     var app, server;
     app = express();
     server = require('http').Server(app);
-    
+
     mazehall.moduleStream.log('module loader');
     mazehall.initExpress(app);
-    
+
     module.exports = server;
-    
+
 and a startup file server.js like:
 
     var server = require('./app.js');
-    
+
     var port;
     port = process.env.PORT || 3000
     server.listen(port, function() {
       console.log('server listen on port: ' + port);
     });
-    
+
 
 ### Command line case
 
 Let's do it mazehall cli.  
 
     $ [sudo] npm install mazehall -g
-    
+
 A global installation is an optional step. You could also call the cli interface in the node_modules/.bin directory.
- 
+
     mkdir myapp
     cd myapp
     mazehall init
-    
-At this point you have an mazehall application with express integration. Now you need at least an application module. 
+
+At this point you have an mazehall application with express integration. Now you need at least an application module.
 
     mazehall module gui
-    
+
 That's all.
 
     npm start
-    
+
     server listen on port: 3000
     module loader <value> { module: 'gui', components: [ 'ui', '' ] }
-    
+
 
 
 ## API
@@ -103,10 +103,15 @@ An example package.json
 
 ### Plugin interface
 
+Plugins are first class Node/Io.js modules. They stay in the node_modules directory but don't
+shipped in package.json. They are managed by mazehall and are by default not persisted.
+
+You need your own application logic and infrastructure to build things like extensions-store or so on.
+
 #### Usage
 
       mazehall-plugin [install|remove|update] [name]
-      
+
 
 ### Environment variables
 
@@ -115,8 +120,8 @@ An example package.json
     MAZEHALL_COMPONENTS = 'api,cloud'
 ```
 
-- string to identify the kind of server process like 'jsonApi' or 'admin' 
-- 'core' processes load all modules 
+- string to identify the kind of server process like 'jsonApi' or 'admin'
+- 'core' processes load all modules
 - non core like 'admin' loads only the admin modules from the core
 
 ## Run Tests
